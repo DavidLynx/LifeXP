@@ -7,7 +7,7 @@ export function renderWelcomeView(state) {
   return `
     <main class="view welcome-view">
       <section class="welcome-hero">
-        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo hero-logo" })}
+        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo hero-logo", hideIcon: true })}
         <h1>${t(state, "welcome.title")}</h1>
         <p>
           ${t(state, "welcome.description")}

@@ -208,11 +208,41 @@ button {
   display: block;
   max-width: 100%;
   object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.16));
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 100%;
+}
+
+.brand-lockup.compact-lockup {
+  gap: 12px;
+}
+
+.brand-app-icon {
+  width: 68px;
+  height: 68px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.16));
 }
 
 .hero-logo {
   width: min(100%, 320px);
   margin-bottom: 8px;
+}
+
+.welcome-hero .brand-lockup {
+  display: flex;
+  width: min(100%, 380px);
+}
+
+.welcome-hero .brand-app-icon {
+  width: 116px;
+  height: 116px;
 }
 
 .help-logo {
@@ -229,6 +259,16 @@ button {
   width: 132px;
   height: auto;
   margin-bottom: 10px;
+}
+
+.brand-lockup .brand-wordmark {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.brand-lockup .brand-logo {
+  margin-bottom: 0;
+  min-width: 0;
 }
 
 .simple-character {
@@ -1457,6 +1497,13 @@ textarea {
   text-align: center;
 }
 
+.app-shell[data-theme="light"] .app-footer {
+  color: #10211f;
+  border-color: rgba(15, 118, 108, 0.28);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 42px rgba(43, 84, 77, 0.12);
+}
+
 .app-footer p,
 .app-footer small {
   margin: 0;
@@ -1478,6 +1525,16 @@ textarea {
   color: var(--brand-white);
   background: rgba(255, 255, 255, 0.065);
   font-weight: 800;
+}
+
+.app-shell[data-theme="light"] .footer-links button {
+  color: #0b332f;
+  border-color: rgba(15, 118, 108, 0.28);
+  background: rgba(15, 159, 143, 0.1);
+}
+
+.app-shell[data-theme="light"] .app-footer small {
+  color: #344a47;
 }
 
 @media (min-width: 760px) {

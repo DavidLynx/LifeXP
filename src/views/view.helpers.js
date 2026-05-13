@@ -60,6 +60,23 @@ export function renderIcon(name, className = "svg-icon") {
   return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
 }
 
+export function brandLogoPath(state, variant = "wordmark") {
+  const mode = state?.profile?.visualTheme || state?.settings?.theme || "dark";
+  const theme = mode === "light" ? "light" : "dark";
+  return `/assets/brand/lifexp_${variant}_${theme}.svg`;
+}
+
+export function renderBrandMark(state, options = {}) {
+  const variant = options.variant || "wordmark";
+  const className = options.className || (variant === "primary_logo" ? "brand-logo" : "brand-wordmark");
+  return `
+    <span class="brand-lockup ${options.compact ? "compact-lockup" : ""}">
+      <img class="brand-app-icon" src="/assets/brand/lifexp_app_icon.svg" alt="" aria-hidden="true" />
+      <img class="${className}" src="${brandLogoPath(state, variant)}" alt="LifeXP" />
+    </span>
+  `;
+}
+
 export function getActiveHabits(state) {
   return activeHabits(state);
 }

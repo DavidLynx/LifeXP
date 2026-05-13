@@ -2,7 +2,7 @@ import { getAvatarById } from "../data/avatar.data.js";
 import { t } from "../i18n.js";
 import { getDayRecord, getHabitProgress } from "../state/state.manager.js";
 import { getLocalizedShopItem, getOwnedShopItems } from "../systems/shop.system.js";
-import { escapeHtml, formatDate, getTodaySummary, renderHabitCard, renderIcon } from "./view.helpers.js";
+import { escapeHtml, formatDate, getTodaySummary, renderBrandMark, renderHabitCard, renderIcon } from "./view.helpers.js";
 
 function greeting(state) {
   const hour = new Date().getHours();
@@ -126,7 +126,7 @@ export function renderTodayView(state) {
       <div class="dashboard-column main-column">
         <section class="hero-band today-hero">
           <div>
-            <img class="brand-wordmark" src="/assets/icons/lifexp_wordmark.svg" alt="LifeXP" />
+            ${renderBrandMark(state, { compact: true })}
             <p class="eyebrow">${formatDate(summary.today)}</p>
             <h1>${greeting(state)}</h1>
             <p>${t(state, "today.progress", { name: escapeHtml(name) })}</p>

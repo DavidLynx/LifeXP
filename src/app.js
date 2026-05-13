@@ -1,8 +1,8 @@
 ﻿import { getState, initializeSession, resetState, setState } from "./state/state.manager.js";
 import { HABIT_TEMPLATES } from "./data/habits.data.js";
 import { getCurrentRoute, goToRoute, normalizeRoute, NAV_ITEMS, ROUTES } from "./router.js";
-import { t } from "./i18n.js";
-import { renderIcon } from "./views/view.helpers.js";
+import { localizeVisibleText, t } from "./i18n.js";
+import { renderBrandMark, renderIcon } from "./views/view.helpers.js";
 import {
   addHabit,
   completeHabit,
@@ -111,6 +111,7 @@ function renderBottomNav(route, state) {
 function renderAppFooter(state) {
   return `
     <footer class="app-footer" aria-label="Información del proyecto">
+      ${renderBrandMark(state, { compact: true })}
       <p>${t(state, "app.footerCopyright")}</p>
       <p>${t(state, "app.footerCredit")}</p>
       <nav class="footer-links" aria-label="Links internos">
@@ -139,6 +140,20 @@ export function renderApp(route = ROUTES.TODAY) {
       ${[ROUTES.WELCOME, ROUTES.ONBOARDING, ROUTES.HELP].includes(normalizedRoute) ? "" : renderBottomNav(normalizedRoute, state)}
     </div>
   `;
+  localizeVisibleText(root, state);
+  document.documentElement.lang = state.language || "es";
+  document.title = state.language === "en"
+    ? "LifeXP - Free habits, reminders, and personal progress app"
+    : "LifeXP - App gratuita de hábitos, recordatorios y progreso personal";
+  const description = document.querySelector("meta[name='description']");
+  if (description) {
+    description.setAttribute(
+      "content",
+      state.language === "en"
+        ? "LifeXP is a free app by Lynx Visual Division for habits, reminders, progress tracking, cycle reduction, and mobile-first consistency."
+        : "LifeXP es una app gratuita creada por Lynx Visual Division para crear hábitos, recibir recordatorios, registrar avances, reducir ciclos y ver progreso diario desde una experiencia mobile-first."
+    );
+  }
 
   bindUIEvents();
   markBusyHabitButtons();

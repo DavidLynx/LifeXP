@@ -6,6 +6,7 @@ import {
   getDayCompletion,
   getHabitStrength,
   getWeeklySummary,
+  renderBrandMark,
   renderIcon,
 } from "./view.helpers.js";
 
@@ -57,7 +58,7 @@ export function renderProgressView(state) {
     <main class="view progress-view">
       <div class="dashboard-column main-column">
         <section class="page-header compact-page-header">
-          <img class="brand-wordmark" src="/assets/icons/lifexp_wordmark.svg" alt="LifeXP" />
+          ${renderBrandMark(state, { compact: true })}
           <p class="eyebrow">Progreso</p>
           <h1>Tu semana en claro</h1>
           <p class="page-description">Rachas, cumplimiento semanal, calendario y habitos que piden atencion.</p>

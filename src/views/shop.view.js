@@ -1,6 +1,6 @@
 import { t } from "../i18n.js";
 import { getBits, getLocalizedShopItem, getOwnedShopItems, getShopItems } from "../systems/shop.system.js";
-import { escapeHtml, renderIcon } from "./view.helpers.js";
+import { escapeHtml, renderBrandMark, renderIcon } from "./view.helpers.js";
 
 function itemLabel(item, state) {
   return getLocalizedShopItem(
@@ -86,7 +86,7 @@ export function renderShopView(state) {
     <main class="view shop-view">
       <div class="dashboard-column main-column">
         <section class="page-header compact-page-header shop-header">
-          <img class="brand-wordmark" src="/assets/icons/lifexp_wordmark.svg" alt="LifeXP" />
+          ${renderBrandMark(state, { compact: true })}
           <p class="eyebrow">${t(state, "shop.eyebrow")}</p>
           <h1>${t(state, "shop.title")}</h1>
           <p class="page-description">${t(state, "shop.description")}</p>

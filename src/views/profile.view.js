@@ -2,7 +2,7 @@ import { AVATAR_OPTIONS, getAvatarById } from "../data/avatar.data.js";
 import { THEME_OPTIONS, WEEKLY_SUMMARY_OPTIONS } from "../data/habits.data.js";
 import { t } from "../i18n.js";
 import { renderInventorySection } from "./shop.view.js";
-import { escapeHtml, getActiveHabits, getTodaySummary } from "./view.helpers.js";
+import { escapeHtml, getActiveHabits, getTodaySummary, renderBrandMark } from "./view.helpers.js";
 
 function renderOptions(items, selected) {
   return items
@@ -40,7 +40,7 @@ export function renderProfileView(state, options = {}) {
         <section class="page-header profile-header">
           <div class="profile-avatar-frame">${renderAvatar(profile)}</div>
           <div>
-            <img class="brand-wordmark" src="/assets/icons/lifexp_wordmark.svg" alt="LifeXP" />
+            ${renderBrandMark(state, { compact: true })}
             <p class="eyebrow">${t(state, "nav.profile")}</p>
             <h1>${escapeHtml(profile.name || t(state, "profile.titleFallback"))}</h1>
             <p class="page-description">${escapeHtml(profile.mainGoal)}</p>
@@ -135,7 +135,7 @@ export function renderProfileView(state, options = {}) {
         <section class="surface-panel">
         <p class="eyebrow">Lynx Visual Division</p>
         <h2>LifeXP y portafolio</h2>
-        <img class="brand-logo panel-logo" src="/assets/icons/lifexp_primary_logo.svg" alt="LifeXP" />
+        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo panel-logo" })}
         <p class="muted-copy">LifeXP es un prototipo viable de web app creado por Lynx Visual Division. Diseño y desarrollo: Juan David.</p>
         <div class="project-grid">
           <button class="project-card" data-route="ayuda" type="button">

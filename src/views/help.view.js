@@ -1,5 +1,5 @@
 import { t } from "../i18n.js";
-import { escapeHtml } from "./view.helpers.js";
+import { escapeHtml, renderBrandMark } from "./view.helpers.js";
 
 const FAQ_ITEMS = [
   ["¿Qué es LifeXP?", "LifeXP es una app gratuita para crear hábitos, recibir recordatorios visuales, registrar avances y revisar progreso personal desde una experiencia mobile-first."],
@@ -58,7 +58,7 @@ export function renderHelpView(state = {}) {
   return `
     <main class="view help-view">
       <section class="page-header compact-page-header">
-        <img class="brand-logo help-logo" src="/assets/icons/lifexp_primary_logo.svg" alt="LifeXP" />
+        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo help-logo" })}
         <p class="eyebrow">${t(state, "help.eyebrow")}</p>
         <h1>${t(state, "help.title")}</h1>
         <p class="page-description">${t(state, "help.description")}</p>

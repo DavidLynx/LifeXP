@@ -1,4 +1,5 @@
-import { escapeHtml, getTodaySummary } from "./view.helpers.js";
+import { t } from "../i18n.js";
+import { escapeHtml, getTodaySummary, renderBrandMark } from "./view.helpers.js";
 
 export function renderWelcomeView(state) {
   const summary = getTodaySummary(state);
@@ -6,25 +7,25 @@ export function renderWelcomeView(state) {
   return `
     <main class="view welcome-view">
       <section class="welcome-hero">
-        <img class="brand-logo hero-logo" src="/assets/icons/lifexp_primary_logo.svg" alt="LifeXP" />
-        <h1>Habitos simples. Progreso visible. Todos los dias.</h1>
+        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo hero-logo" })}
+        <h1>${t(state, "welcome.title")}</h1>
         <p>
-          Una app gratuita para crear habitos, recibir recordatorios, registrar avances y mantener constancia.
+          ${t(state, "welcome.description")}
         </p>
         <div class="hero-actions">
           <button class="btn btn-primary" data-route="onboarding">
-            Crear mi rutina
+            ${t(state, "welcome.createRoutine")}
           </button>
-          <button class="btn btn-secondary" data-route="${state.profile.onboardingCompleted ? "hoy" : "hoy"}">Continuar</button>
+          <button class="btn btn-secondary" data-route="${state.profile.onboardingCompleted ? "hoy" : "hoy"}">${t(state, "welcome.continue")}</button>
         </div>
       </section>
 
       <section class="preview-stack">
         <article class="preview-card primary-preview">
           <div>
-            <span class="mini-label">Hoy</span>
+            <span class="mini-label">${t(state, "nav.today")}</span>
             <h2>${summary.percent}%</h2>
-            <p>${summary.completedCount}/${summary.totalCount} habitos listos</p>
+            <p>${t(state, "welcome.habitsReady", { done: summary.completedCount, total: summary.totalCount })}</p>
           </div>
           <div class="mini-calendar">
             <span></span><span></span><span class="active"></span><span></span>
@@ -33,7 +34,7 @@ export function renderWelcomeView(state) {
         <article class="preview-card">
           <span class="avatar-bubble">${escapeHtml(state.profile.avatarVisual || "LV")}</span>
           <div>
-            <h3>${escapeHtml(state.profile.name || "Tu perfil")}</h3>
+            <h3>${escapeHtml(state.profile.name || t(state, "welcome.profileFallback"))}</h3>
             <p>${escapeHtml(state.profile.mainGoal)}</p>
           </div>
         </article>

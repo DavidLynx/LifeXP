@@ -6,7 +6,7 @@
   PROFESSIONAL_ICONS,
   REDUCTION_PLAN_TYPES,
 } from "../data/habits.data.js";
-import { escapeHtml, getActiveHabits, getCategory, getFrequencyLabel, getTypeLabel, renderIcon } from "./view.helpers.js";
+import { escapeHtml, getActiveHabits, getCategory, getFrequencyLabel, getTypeLabel, renderBrandMark, renderIcon } from "./view.helpers.js";
 
 function renderOptions(items, selected = "", valueKey = "id", labelKey = "name") {
   return items
@@ -277,7 +277,7 @@ export function renderHabitsView(state, options = {}) {
     <main class="view habits-view">
       <div class="dashboard-column main-column">
         <section class="page-header compact-page-header">
-          <img class="brand-wordmark" src="/assets/icons/lifexp_wordmark.svg" alt="LifeXP" />
+          ${renderBrandMark(state, { compact: true })}
           <p class="eyebrow">Habitos</p>
           <h1>Mi rutina actual</h1>
           <p class="page-description">Estos son los habitos que forman parte de su seguimiento diario.</p>

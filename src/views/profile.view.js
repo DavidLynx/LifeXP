@@ -135,7 +135,7 @@ export function renderProfileView(state, options = {}) {
         <section class="surface-panel">
         <p class="eyebrow">Lynx Visual Division</p>
         <h2>LifeXP y portafolio</h2>
-        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo panel-logo" })}
+        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo panel-logo", hideIcon: true })}
         <p class="muted-copy">LifeXP es un prototipo viable de web app creado por Lynx Visual Division. Diseño y desarrollo: Juan David.</p>
         <div class="project-grid">
           <button class="project-card" data-route="ayuda" type="button">

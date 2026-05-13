@@ -71,7 +71,7 @@ export function renderBrandMark(state, options = {}) {
   const className = options.className || (variant === "primary_logo" ? "brand-logo" : "brand-wordmark");
   return `
     <span class="brand-lockup ${options.compact ? "compact-lockup" : ""}">
-      <img class="brand-app-icon" src="/assets/brand/lifexp_app_icon.svg" alt="" aria-hidden="true" />
+      ${options.hideIcon ? "" : `<img class="brand-app-icon" src="/assets/brand/lifexp_app_icon.svg" alt="" aria-hidden="true" />`}
       <img class="${className}" src="${brandLogoPath(state, variant)}" alt="LifeXP" />
     </span>
   `;

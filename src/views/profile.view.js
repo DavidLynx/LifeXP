@@ -1,5 +1,7 @@
 import { AVATAR_OPTIONS, getAvatarById } from "../data/avatar.data.js";
 import { THEME_OPTIONS, WEEKLY_SUMMARY_OPTIONS } from "../data/habits.data.js";
+import { t } from "../i18n.js";
+import { renderInventorySection } from "./shop.view.js";
 import { escapeHtml, getActiveHabits, getTodaySummary } from "./view.helpers.js";
 
 function renderOptions(items, selected) {
@@ -39,8 +41,8 @@ export function renderProfileView(state, options = {}) {
           <div class="profile-avatar-frame">${renderAvatar(profile)}</div>
           <div>
             <img class="brand-wordmark" src="/assets/icons/lifexp_wordmark.svg" alt="LifeXP" />
-            <p class="eyebrow">Perfil</p>
-            <h1>${escapeHtml(profile.name || "Tu espacio personal")}</h1>
+            <p class="eyebrow">${t(state, "nav.profile")}</p>
+            <h1>${escapeHtml(profile.name || t(state, "profile.titleFallback"))}</h1>
             <p class="page-description">${escapeHtml(profile.mainGoal)}</p>
             <p class="muted-copy">Inicio: ${escapeHtml(profile.startDate)} - ${habits.length} habitos activos</p>
           </div>
@@ -85,10 +87,18 @@ export function renderProfileView(state, options = {}) {
               <input name="startDate" type="date" value="${escapeHtml(profile.startDate)}" />
             </label>
             <label>
-              Tema visual
+              ${t(state, "profile.visualTheme")}
               <select name="visualTheme">${renderOptions(THEME_OPTIONS, profile.visualTheme)}</select>
             </label>
           </div>
+
+          <label>
+            ${t(state, "app.language")}
+            <select name="language">
+              <option value="es" ${state.language === "es" ? "selected" : ""}>ES</option>
+              <option value="en" ${state.language === "en" ? "selected" : ""}>EN</option>
+            </select>
+          </label>
 
           <label>
             Preferencia de resumen semanal
@@ -103,6 +113,7 @@ export function renderProfileView(state, options = {}) {
           <button class="btn btn-primary" type="submit">Guardar perfil</button>
         </form>
         </section>
+        ${renderInventorySection(state)}
       </div>
 
       <aside class="dashboard-column side-column">
@@ -122,10 +133,10 @@ export function renderProfileView(state, options = {}) {
         </section>
 
         <section class="surface-panel">
-        <p class="eyebrow">Links Visual Division</p>
+        <p class="eyebrow">Lynx Visual Division</p>
         <h2>LifeXP y portafolio</h2>
         <img class="brand-logo panel-logo" src="/assets/icons/lifexp_primary_logo.svg" alt="LifeXP" />
-        <p class="muted-copy">LifeXP es un prototipo viable de web app creado por Links Visual Division. Diseño y desarrollo: Juan David.</p>
+        <p class="muted-copy">LifeXP es un prototipo viable de web app creado por Lynx Visual Division. Diseño y desarrollo: Juan David.</p>
         <div class="project-grid">
           <button class="project-card" data-route="ayuda" type="button">
             <strong>Ayuda y FAQ</strong>
@@ -134,11 +145,11 @@ export function renderProfileView(state, options = {}) {
           </button>
           <button class="project-card" data-route="ayuda" type="button">
             <strong>Acerca de LifeXP</strong>
-            <span>Aplicacion gratuita creada por Links Visual Division.</span>
+            <span>Aplicación gratuita creada por Lynx Visual Division.</span>
             <small>Ver seccion</small>
           </button>
           <button class="project-card" data-route="ayuda" type="button">
-            <strong>Otros proyectos de Links Visual Division</strong>
+            <strong>Otros proyectos de Lynx Visual Division</strong>
             <span>Dark Wallet, Neon Dice, Nido Canino, Generador QR y mas.</span>
             <small>Ver portafolio</small>
           </button>

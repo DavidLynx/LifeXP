@@ -3,7 +3,7 @@ export const HABIT_CATEGORIES = [
   { id: "movimiento", name: "Movimiento", color: "#f59e66", icon: "movement" },
   { id: "enfoque", name: "Enfoque", color: "#7aa7ff", icon: "focus" },
   { id: "descanso", name: "Descanso", color: "#6ee7d8", icon: "rest" },
-  { id: "alimentacion", name: "Alimentacion", color: "#a3e635", icon: "food" },
+  { id: "alimentacion", name: "Alimentación", color: "#a3e635", icon: "food" },
   { id: "bienestar-mental", name: "Bienestar mental", color: "#c4a1ff", icon: "mind" },
   { id: "estudio", name: "Estudio", color: "#67e8f9", icon: "study" },
   { id: "creatividad", name: "Creatividad", color: "#f0abfc", icon: "creative" },
@@ -18,7 +18,7 @@ export const HABIT_AREAS = HABIT_CATEGORIES;
 export const MEASUREMENT_TYPES = {
   boolean: "Completar / no completar",
   counter: "Contador",
-  numeric: "Meta numerica",
+  numeric: "Meta numérica",
   timer: "Temporizador",
   reduce: "Reducir cantidad",
   mood: "Registro emocional",
@@ -34,9 +34,8 @@ export const FREQUENCIES = {
 };
 
 export const THEME_OPTIONS = [
-  { id: "dark", name: "Oscuro elegante" },
-  { id: "calm", name: "Calma" },
-  { id: "light-ready", name: "Claro preparado" },
+  { id: "dark", name: "Oscuro" },
+  { id: "light", name: "Claro calm" },
 ];
 
 export const WEEKLY_SUMMARY_OPTIONS = [
@@ -71,6 +70,12 @@ export const PROFESSIONAL_ICONS = [
   "order",
   "reduce",
   "digital",
+  "spark",
+  "shield",
+  "target",
+  "bolt",
+  "calendar",
+  "flame",
 ];
 
 const template = (data) => ({

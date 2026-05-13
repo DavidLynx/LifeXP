@@ -23,6 +23,19 @@ function renderEnumOptions(map, selected = "") {
     .join("");
 }
 
+function renderIconPicker(selected = "check") {
+  return `
+    <div class="icon-picker" role="radiogroup" aria-label="Icono visual">
+      ${PROFESSIONAL_ICONS.map((icon) => `
+        <label class="icon-choice ${icon === selected ? "selected" : ""}" title="${icon}">
+          <input type="radio" name="icon" value="${icon}" ${icon === selected ? "checked" : ""} />
+          ${renderIcon(icon)}
+        </label>
+      `).join("")}
+    </div>
+  `;
+}
+
 function renderHabitForm(habit = null) {
   const action = habit ? "edit-habit" : "add-habit";
   const title = habit ? "Editar habito" : "Crear nuevo habito";
@@ -72,7 +85,7 @@ function renderHabitForm(habit = null) {
         <div class="form-row">
           <label>
             Icono visual
-            <select name="icon">${PROFESSIONAL_ICONS.map((icon) => `<option value="${icon}" ${icon === habit?.icon ? "selected" : ""}>${icon}</option>`).join("")}</select>
+            ${renderIconPicker(habit?.icon)}
           </label>
           <label>
             Color

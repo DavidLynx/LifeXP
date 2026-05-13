@@ -1,5 +1,6 @@
 import { HABIT_CATEGORIES } from "../data/habits.data.js";
 import { getHabitEntry, getTodayKey } from "../state/state.manager.js";
+import { addBits } from "./shop.system.js";
 
 export function activeHabits(state) {
   return (state.habits || []).filter((habit) => habit.active);
@@ -34,6 +35,11 @@ function normalizeHabitPayload(data, existing = {}) {
   };
 }
 
+function createHabitId() {
+  if (globalThis.crypto?.randomUUID) return `habit-${globalThis.crypto.randomUUID()}`;
+  return `habit-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export function addHabit(state, data) {
   const payload = normalizeHabitPayload(data);
   if (!payload.name) {
@@ -41,7 +47,7 @@ export function addHabit(state, data) {
   }
 
   const habit = {
-    id: `habit-${Date.now()}`,
+    id: createHabitId(),
     ...payload,
     active: true,
     createdAt: new Date().toISOString(),
@@ -153,6 +159,7 @@ export function recordHabit(state, habitId, data = {}, dateKey = getTodayKey()) 
   }
 
   const previous = getHabitEntry(nextState, habitId, dateKey);
+  const wasCompleted = Boolean(previous.completed);
   const rawValue =
     data.value !== undefined && data.value !== ""
       ? Number(data.value)
@@ -168,6 +175,8 @@ export function recordHabit(state, habitId, data = {}, dateKey = getTodayKey()) 
         : value >= habit.target;
 
   nextState.dailyRecords[dateKey].habits[habitId] = {
+    habitId,
+    date: dateKey,
     completed,
     value,
     note: String(data.note ?? previous.note ?? "").trim(),
@@ -205,7 +214,27 @@ export function recordHabit(state, habitId, data = {}, dateKey = getTodayKey()) 
     });
   }
 
-  return { ok: true, habit, entry: nextState.dailyRecords[dateKey].habits[habitId], state: nextState };
+  let rewardState = nextState;
+  let bitsEarned = 0;
+  if (completed && !wasCompleted) {
+    const reward = addBits(rewardState, 10, { reason: "habit-completed", dateKey, habitId });
+    rewardState = reward.state;
+    bitsEarned += reward.awarded;
+  }
+
+  const active = activeHabits(rewardState);
+  const dayEntries = rewardState.dailyRecords[dateKey]?.habits || {};
+  const isFullDay = active.length > 0 && active.every((item) => dayEntries[item.id]?.completed);
+  const alreadyRewardedFullDay = (rewardState.logs || []).some(
+    (reward) => reward.reason === "daily-streak" && reward.date === dateKey
+  );
+  if (isFullDay && !alreadyRewardedFullDay) {
+    const reward = addBits(rewardState, 15, { reason: "daily-streak", dateKey });
+    rewardState = reward.state;
+    bitsEarned += reward.awarded;
+  }
+
+  return { ok: true, habit, entry: rewardState.dailyRecords[dateKey].habits[habitId], bitsEarned, creditsEarned: bitsEarned, state: rewardState };
 }
 
 export function completeHabit(state, habitId, dateKey = getTodayKey()) {
@@ -253,7 +282,12 @@ export function updateDayStatus(state, data, dateKey = getTodayKey()) {
     nextState.dailyCheckins.unshift(checkin);
   }
 
-  return { ok: true, state: nextState };
+  let rewardState = nextState;
+  if (existingCheckinIndex < 0) {
+    rewardState = addBits(rewardState, 8, { reason: "daily-checkin", dateKey }).state;
+  }
+
+  return { ok: true, state: rewardState };
 }
 
 export function updateProfile(state, data) {
@@ -280,6 +314,7 @@ export function updateProfile(state, data) {
     theme: nextState.profile.visualTheme,
   };
   nextState.settings.theme = nextState.profile.visualTheme;
+  if (data.language === "es" || data.language === "en") nextState.language = data.language;
   if ("notifications" in data) {
     nextState.settings.notifications = data.notifications === "on" || data.notifications === true;
   }
@@ -351,7 +386,7 @@ export function exportStateAsJson(state) {
     {
       exportedAt: new Date().toISOString(),
       app: "LifeXP",
-      version: 3,
+      version: 4,
       data: state,
     },
     null,

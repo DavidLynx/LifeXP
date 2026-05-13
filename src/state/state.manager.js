@@ -1,7 +1,9 @@
 import { HABIT_CATEGORIES } from "../data/habits.data.js";
+import { shopItems } from "../data/shop.data.js";
+import { detectLanguage } from "../i18n.js";
 
-const STORAGE_KEY = "lifexp_state_v3";
-const PREVIOUS_STORAGE_KEYS = ["lifexp_state_v2", "lifexp_state_v1"];
+const STORAGE_KEY = "lifexp_state_v4";
+const PREVIOUS_STORAGE_KEYS = ["lifexp_state_v3", "lifexp_state_v2", "lifexp_state_v1"];
 
 function todayKey(date = new Date()) {
   return date.toISOString().slice(0, 10);
@@ -38,9 +40,17 @@ function createInitialState() {
     dailyCheckins: [],
     achievements: [],
     reminders: [
-      { id: "reminder-day-close", type: "daily-close", label: "Cierre del dia", time: "21:30", active: true },
+      { id: "reminder-day-close", type: "daily-close", label: "Cierre del día", time: "21:30", active: true },
       { id: "reminder-weekly-review", type: "weekly-review", label: "Resumen semanal", time: "18:00", active: true },
     ],
+    bits: 100,
+    credits: 100,
+    shopItems,
+    ownedItems: [],
+    equippedItems: {},
+    shopPurchases: [],
+    rewardHistory: [],
+    language: detectLanguage(),
     dailyRecords: {},
     notes: [],
     settings: {
@@ -89,6 +99,43 @@ function normalizeHabit(habit) {
     note: habit.note || "",
     createdAt: habit.createdAt || new Date().toISOString(),
   };
+}
+
+function normalizeHabits(habits) {
+  const seen = new Set();
+  return (Array.isArray(habits) ? habits : []).map((habit, index) => {
+    const normalized = normalizeHabit(habit);
+    if (!normalized.id || seen.has(normalized.id)) {
+      normalized.id = `habit-${Date.now()}-${index}`;
+    }
+    seen.add(normalized.id);
+    return normalized;
+  });
+}
+
+function normalizeShopItemId(itemId) {
+  const legacyIds = {
+    "hoodie-basic": "hoodie_basic",
+    "black-jacket": "jacket_black",
+    "classic-glasses": "glasses",
+    "vr-glasses": "vr_glasses",
+    "city-backpack": "backpack",
+    "skate-board": "skate",
+  };
+  return legacyIds[itemId] || itemId;
+}
+
+function validShopItemId(itemId) {
+  const normalized = normalizeShopItemId(itemId);
+  return shopItems.some((item) => item.id === normalized) ? normalized : "";
+}
+
+function normalizeBits(safe, initialBits) {
+  if (safe.bits !== undefined && safe.bits !== null) return Math.max(0, Number(safe.bits || 0));
+  if (safe.credits !== undefined && safe.credits !== null && Number(safe.credits) > 0) {
+    return Math.max(0, Number(safe.credits || 0));
+  }
+  return initialBits;
 }
 
 function normalizeDayRecord(record) {
@@ -146,13 +193,32 @@ function normalizeLoadedState(rawState) {
       mainGoal: safe.user?.mainGoal || safe.profile?.mainGoal || focus || initial.user.mainGoal,
       theme: safe.user?.theme || safe.settings?.theme || initial.user.theme,
     },
-    habits: Array.isArray(safe.habits) ? safe.habits.map(normalizeHabit) : initial.habits,
+    habits: normalizeHabits(safe.habits),
     habitLogs: Array.isArray(safe.habitLogs) ? safe.habitLogs : [],
     reductionPlans: Array.isArray(safe.reductionPlans) ? safe.reductionPlans : [],
     reductionLogs: Array.isArray(safe.reductionLogs) ? safe.reductionLogs : [],
     dailyCheckins: Array.isArray(safe.dailyCheckins) ? safe.dailyCheckins : [],
     achievements: Array.isArray(safe.achievements) ? safe.achievements : [],
     reminders: Array.isArray(safe.reminders) ? safe.reminders : initial.reminders,
+    bits: normalizeBits(safe, initial.bits),
+    credits: normalizeBits(safe, initial.bits),
+    shopItems,
+    ownedItems: Array.isArray(safe.ownedItems)
+      ? [...new Set(safe.ownedItems.map(validShopItemId).filter(Boolean))]
+      : [],
+    equippedItems:
+      safe.equippedItems && typeof safe.equippedItems === "object" && !Array.isArray(safe.equippedItems)
+        ? Object.fromEntries(
+            Object.entries(safe.equippedItems)
+              .map(([slot, id]) => [slot, validShopItemId(id)])
+              .filter(([, id]) => Boolean(id))
+          )
+        : {},
+    shopPurchases: Array.isArray(safe.shopPurchases)
+      ? safe.shopPurchases.map((purchase) => ({ ...purchase, itemId: validShopItemId(purchase.itemId) })).filter((purchase) => purchase.itemId)
+      : [],
+    rewardHistory: Array.isArray(safe.rewardHistory) ? safe.rewardHistory : [],
+    language: safe.language === "en" || safe.language === "es" ? safe.language : detectLanguage(),
     portfolio: {
       ...initial.portfolio,
       ...(safe.portfolio || {}),
@@ -178,6 +244,14 @@ function normalizeLoadedState(rawState) {
   normalized.profile.name = normalized.profile.name || normalized.user.name;
   normalized.profile.avatar = normalized.profile.avatar || normalized.user.avatar;
   normalized.profile.avatarStyle = normalized.profile.avatarStyle || normalized.user.avatarStyle;
+  normalized.profile.visualTheme = ["light", "dark"].includes(normalized.profile.visualTheme)
+    ? normalized.profile.visualTheme
+    : normalized.profile.visualTheme === "calm"
+      ? "light"
+      : "dark";
+  normalized.settings.theme = normalized.profile.visualTheme;
+  normalized.credits = normalized.bits;
+  localStorage.setItem("lifexp_language", normalized.language);
 
   return normalized;
 }
@@ -202,6 +276,7 @@ function loadState() {
 function saveState(nextState = state) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+    localStorage.setItem("lifexp_language", nextState.language || detectLanguage());
     if (nextState.session) nextState.session.storageError = "";
   } catch (error) {
     console.error("Error saving state:", error);

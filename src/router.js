@@ -5,6 +5,7 @@ export const ROUTES = {
   HABITS: "habitos",
   PROGRESS: "progreso",
   ACHIEVEMENTS: "logros",
+  SHOP: "tienda",
   PROFILE: "perfil",
   HELP: "ayuda",
   NOT_FOUND: "not-found",
@@ -13,11 +14,11 @@ export const ROUTES = {
 export const VALID_ROUTES = Object.values(ROUTES);
 
 export const NAV_ITEMS = [
-  { id: "nav-today", icon: "home", label: "Hoy", route: ROUTES.TODAY },
-  { id: "nav-habits", icon: "check", label: "Habitos", route: ROUTES.HABITS },
-  { id: "nav-progress", icon: "chart", label: "Progreso", route: ROUTES.PROGRESS },
-  { id: "nav-achievements", icon: "award", label: "Logros", route: ROUTES.ACHIEVEMENTS },
-  { id: "nav-profile", icon: "user", label: "Perfil", route: ROUTES.PROFILE },
+  { id: "nav-today", icon: "home", labelKey: "nav.today", route: ROUTES.TODAY },
+  { id: "nav-habits", icon: "check", labelKey: "nav.habits", route: ROUTES.HABITS },
+  { id: "nav-progress", icon: "chart", labelKey: "nav.progress", route: ROUTES.PROGRESS },
+  { id: "nav-shop", icon: "shop", labelKey: "nav.shop", route: ROUTES.SHOP },
+  { id: "nav-profile", icon: "user", labelKey: "nav.profile", route: ROUTES.PROFILE },
 ];
 
 export function getRawHashRoute() {

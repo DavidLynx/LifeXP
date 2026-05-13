@@ -1,6 +1,7 @@
 ﻿import { getState, initializeSession, resetState, setState } from "./state/state.manager.js";
 import { HABIT_TEMPLATES } from "./data/habits.data.js";
 import { getCurrentRoute, goToRoute, normalizeRoute, NAV_ITEMS, ROUTES } from "./router.js";
+import { t } from "./i18n.js";
 import { renderIcon } from "./views/view.helpers.js";
 import {
   addHabit,
@@ -24,10 +25,13 @@ import { renderAchievementsView } from "./views/achievements.view.js";
 import { renderProfileView } from "./views/profile.view.js";
 import { renderHelpView } from "./views/help.view.js";
 import { renderNotFoundView } from "./views/not-found.view.js";
+import { renderShopView } from "./views/shop.view.js";
+import { buyShopItem, equipShopItem, getBits } from "./systems/shop.system.js";
 
 const APP_ROOT_ID = "app";
 let pendingDeleteHabitId = null;
 let pendingLocalReset = false;
+const busyHabitIds = new Set();
 
 const GOAL_TEMPLATE_RULES = {
   "Crear habitos saludables": ["Tomar agua", "Caminar al menos 15 minutos", "Dormir 7 horas"],
@@ -67,8 +71,9 @@ const VIEW_RENDERERS = {
   [ROUTES.HABITS]: (state) => renderHabitsView(state, { pendingDeleteHabitId }),
   [ROUTES.PROGRESS]: (state) => renderProgressView(state),
   [ROUTES.ACHIEVEMENTS]: (state) => renderAchievementsView(state),
+  [ROUTES.SHOP]: (state) => renderShopView(state),
   [ROUTES.PROFILE]: (state) => renderProfileView(state, { pendingLocalReset }),
-  [ROUTES.HELP]: () => renderHelpView(),
+  [ROUTES.HELP]: (state) => renderHelpView(state),
   [ROUTES.NOT_FOUND]: () => renderNotFoundView(),
 };
 
@@ -78,30 +83,43 @@ function getAppRoot() {
   return root;
 }
 
-function renderBottomNav(route) {
+function renderTopControls(state) {
   return `
-    <nav class="bottom-nav" aria-label="Navegacion principal">
+    <div class="app-controls" aria-label="Preferencias de interfaz">
+      <div class="segmented-control" aria-label="${t(state, "app.language")}">
+        <button class="${state.language === "es" ? "active" : ""}" data-action="set-language" data-language="es" type="button">ES</button>
+        <button class="${state.language === "en" ? "active" : ""}" data-action="set-language" data-language="en" type="button">EN</button>
+      </div>
+      <div class="credit-pill ${state.session?.bitsPulse ? "bits-pulse" : ""}">${renderIcon("spark")} <strong>${getBits(state)}</strong> ${t(state, "app.credits")}</div>
+    </div>
+  `;
+}
+
+function renderBottomNav(route, state) {
+  return `
+    <nav class="bottom-nav" aria-label="Navegación principal">
       ${NAV_ITEMS.map((item) => `
         <button class="nav-item ${item.route === route ? "active" : ""}" data-route="${item.route}" type="button">
           <span class="nav-icon">${renderIcon(item.icon)}</span>
-          <span>${item.label}</span>
+          <span>${t(state, item.labelKey)}</span>
         </button>
       `).join("")}
     </nav>
   `;
 }
 
-function renderAppFooter() {
+function renderAppFooter(state) {
   return `
-    <footer class="app-footer" aria-label="Informacion del proyecto">
-      <p>© 2026 Links Visual Division. LifeXP — Prototipo viable de web app.</p>
+    <footer class="app-footer" aria-label="Información del proyecto">
+      <p>${t(state, "app.footerCopyright")}</p>
+      <p>${t(state, "app.footerCredit")}</p>
       <nav class="footer-links" aria-label="Links internos">
-        <button type="button" data-route="ayuda">Acerca de</button>
+        <button type="button" data-route="ayuda">${t(state, "app.about")}</button>
         <button type="button" data-route="ayuda">FAQ</button>
-        <button type="button" data-route="ayuda">Portafolio</button>
-        <button type="button" data-route="perfil">Privacidad local</button>
+        <button type="button" data-route="ayuda">${t(state, "app.portfolio")}</button>
+        <button type="button" data-route="perfil">${t(state, "app.localPrivacy")}</button>
       </nav>
-      <small>Los datos se guardan localmente en este dispositivo mediante localStorage.</small>
+      <small>${t(state, "app.localStorage")}</small>
     </footer>
   `;
 }
@@ -113,15 +131,17 @@ export function renderApp(route = ROUTES.TODAY) {
   const renderer = VIEW_RENDERERS[normalizedRoute] || VIEW_RENDERERS[ROUTES.NOT_FOUND];
 
   root.innerHTML = `
-    <div class="app-shell">
-      ${state.session?.storageError ? `<aside class="state-banner error-state">No se pudo guardar localmente. Revisa permisos o espacio del navegador.</aside>` : ""}
+    <div class="app-shell" data-theme="${state.profile?.visualTheme || state.settings?.theme || "dark"}">
+      ${renderTopControls(state)}
+      ${state.session?.storageError ? `<aside class="state-banner error-state">${t(state, "app.storageError")}</aside>` : ""}
       ${renderer(state)}
-      ${renderAppFooter()}
-      ${[ROUTES.WELCOME, ROUTES.ONBOARDING, ROUTES.HELP].includes(normalizedRoute) ? "" : renderBottomNav(normalizedRoute)}
+      ${renderAppFooter(state)}
+      ${[ROUTES.WELCOME, ROUTES.ONBOARDING, ROUTES.HELP].includes(normalizedRoute) ? "" : renderBottomNav(normalizedRoute, state)}
     </div>
   `;
 
   bindUIEvents();
+  markBusyHabitButtons();
 }
 
 function bindNavigationEvents() {
@@ -133,21 +153,47 @@ function bindNavigationEvents() {
   });
 }
 
+function bindPreferenceEvents() {
+  document.querySelectorAll("[data-action='set-language']").forEach((button) => {
+    button.addEventListener("click", () => {
+      const language = button.getAttribute("data-language") === "en" ? "en" : "es";
+      setState({ ...getState(), language });
+      renderApp(getCurrentRoute());
+    });
+  });
+}
+
 function bindHabitEvents() {
   document.querySelectorAll("[data-action='complete-habit']").forEach((button) => {
     button.addEventListener("click", () => {
       const habitId = button.getAttribute("data-habit-id");
+      if (!habitId || busyHabitIds.has(habitId)) return;
+      busyHabitIds.add(habitId);
+      button.disabled = true;
+      button.classList.add("is-saving");
+      button.textContent = t(getState(), "common.saved");
+
       const valueInput = document.querySelector(`[data-role='habit-value'][data-habit-id='${habitId}']`);
       const value = valueInput?.value;
       const result =
         value !== undefined && value !== ""
           ? recordHabit(getState(), habitId, { value })
           : completeHabit(getState(), habitId);
-      if (!result.ok) return showToast(result.error);
+      if (!result.ok) {
+        busyHabitIds.delete(habitId);
+        button.disabled = false;
+        button.classList.remove("is-saving");
+        button.textContent = t(getState(), "common.complete");
+        return showToast(result.error);
+      }
 
       setState(result.state);
       renderApp(getCurrentRoute());
-      showToast(`${result.habit.name} registrado`);
+      showToast(result.bitsEarned ? `+${result.bitsEarned} Bits` : t(getState(), "common.completed"));
+      setTimeout(() => {
+        busyHabitIds.delete(habitId);
+        renderApp(getCurrentRoute());
+      }, 2000);
     });
   });
 
@@ -350,11 +396,55 @@ function bindResetEvents() {
     localStorage.removeItem("lifexp_state_v1");
     localStorage.removeItem("lifexp_state_v2");
     localStorage.removeItem("lifexp_state_v3");
+    localStorage.removeItem("lifexp_state_v4");
     pendingLocalReset = false;
     resetState();
     goToRoute(ROUTES.TODAY);
     renderApp(ROUTES.TODAY);
     showToast("Datos reiniciados");
+  });
+}
+
+function bindShopEvents() {
+  document.querySelectorAll("[data-action='buy-shop-item']").forEach((button) => {
+    button.addEventListener("click", () => {
+      const result = buyShopItem(getState(), button.getAttribute("data-item-id"));
+      if (!result.ok) {
+        button.classList.add("shake");
+        setTimeout(() => button.classList.remove("shake"), 420);
+        const message =
+          result.error === "insufficient"
+            ? t(getState(), "common.needMoreBits", { amount: result.missingBits || 0 })
+            : result.error === "owned"
+              ? t(getState(), "common.ownedAction")
+              : result.error;
+        return showToast(message);
+      }
+      setState(result.state);
+      renderApp(ROUTES.SHOP);
+      const label = t(getState(), `shopItems.${result.item.key}.name`);
+      showToast(t(getState(), "common.boughtItem", { name: label }));
+    });
+  });
+
+  document.querySelectorAll("[data-action='equip-shop-item']").forEach((button) => {
+    button.addEventListener("click", () => {
+      const result = equipShopItem(getState(), button.getAttribute("data-item-id"));
+      if (!result.ok) return showToast(result.error);
+      setState(result.state);
+      renderApp(getCurrentRoute());
+      showToast(t(getState(), "common.itemEquipped"));
+    });
+  });
+}
+
+function markBusyHabitButtons() {
+  busyHabitIds.forEach((habitId) => {
+    document.querySelectorAll(`[data-action='complete-habit'][data-habit-id='${habitId}']`).forEach((button) => {
+      button.disabled = true;
+      button.classList.add("is-saving");
+      button.textContent = t(getState(), "common.saved");
+    });
   });
 }
 
@@ -402,11 +492,13 @@ function bindExportEvents() {
 
 function bindUIEvents() {
   bindNavigationEvents();
+  bindPreferenceEvents();
   bindHabitEvents();
   bindForms();
   bindResetEvents();
   bindExportEvents();
   bindOnboardingShortcuts();
+  bindShopEvents();
 }
 
 function bindRouteListener() {

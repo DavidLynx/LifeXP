@@ -46,6 +46,13 @@ const ICON_PATHS = {
   reduce: '<path d="M5 12h14"/><path d="M12 5v14"/><path d="m7 17 10-10"/>',
   digital: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M10 18h4"/><path d="M9 7h6"/>',
   help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.1 1.9c-.9.6-1.6 1.1-1.6 2.1"/><path d="M12 17h.01"/>',
+  shop: '<path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/><path d="M9 13h.01M15 13h.01"/>',
+  spark: '<path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/><path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  bolt: '<path d="m13 2-8 12h7l-1 8 8-12h-7l1-8Z"/>',
+  calendar: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M16 3v4M8 3v4M4 10h16"/>',
+  flame: '<path d="M12 22a7 7 0 0 0 7-7c0-4-3-6-5-9-.3 2-1.5 3.3-3 4.7C9.2 12.3 8 14 8 16a4 4 0 0 0 8 0c0-1.3-.7-2.4-2-3.5.1 1.6-.5 2.6-2 3.5-.9-.8-1.4-1.8-1-3-1.7 1.2-3 2.7-3 5a4 4 0 0 0 4 4Z"/>',
 };
 
 export function renderIcon(name, className = "svg-icon") {

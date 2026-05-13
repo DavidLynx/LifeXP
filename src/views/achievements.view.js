@@ -85,6 +85,17 @@ export function renderAchievementsView(state) {
 
       <section class="summary-grid">
         <article class="summary-tile"><span>Desbloqueados</span><strong>${unlocked}/${achievements.length}</strong><small>logros personales</small></article>
+        <article class="summary-tile"><span>Tienda</span><strong>${(state.ownedItems || []).length}</strong><small>ítems en inventario</small></article>
+      </section>
+
+      <section class="surface-panel">
+        <div class="section-head inline">
+          <div>
+            <p class="eyebrow">Recompensas</p>
+            <h2>Tienda e inventario</h2>
+          </div>
+          <button class="btn btn-secondary" data-route="tienda" type="button">Abrir tienda</button>
+        </div>
       </section>
 
       ${groups.map(([difficulty, title]) => {

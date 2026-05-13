@@ -1,70 +1,103 @@
+import { t } from "../i18n.js";
+import { escapeHtml } from "./view.helpers.js";
+
 const FAQ_ITEMS = [
-  ["Que es LifeXP?", "LifeXP es una app gratuita para crear habitos, recibir recordatorios visuales, registrar avances y revisar progreso personal desde una experiencia mobile-first."],
-  ["LifeXP es gratis?", "Si. Esta version esta pensada como una app gratuita y local."],
-  ["Necesito crear cuenta?", "No. No hay login real en esta version."],
-  ["Donde se guardan mis datos?", "Los datos se guardan en localStorage, dentro del navegador que esta usando."],
-  ["Que diferencia hay entre habito y ciclo?", "Un habito es una accion que quiere repetir. Un ciclo es un patron que quiere reducir o controlar, como distracciones digitales, consumo o impulsos repetitivos."],
-  ["Puedo crear habitos personalizados?", "Si. Puede crear habitos personalizados con categoria, frecuencia, meta, recordatorio, icono, color y nota."],
-  ["Como funcionan los recordatorios?", "Cada habito puede tener una hora visible dentro de la app. Las notificaciones del navegador estan preparadas como mejora futura."],
-  ["Que pasa si fallo un dia?", "No pasa nada grave. El progreso se mantiene visible y puede retomar con una accion pequena al dia siguiente."],
-  ["Puedo usar LifeXP para reducir consumo o distracciones?", "Si. Puede crear planes de reduccion para higiene digital, consumo y control de impulsos con seguimiento simple y notas."],
-  ["LifeXP reemplaza terapia o tratamiento profesional?", "No. LifeXP es una herramienta de organizacion, seguimiento y motivacion personal. No reemplaza terapia, diagnostico ni tratamiento profesional."],
-  ["Funciona en celular?", "Si. La interfaz esta disenada primero para celular, con botones grandes, navegacion inferior y lectura clara."],
-  ["Puedo exportar mis datos?", "Si. Desde Perfil puede exportar sus datos como JSON."],
+  ["¿Qué es LifeXP?", "LifeXP es una app gratuita para crear hábitos, recibir recordatorios visuales, registrar avances y revisar progreso personal desde una experiencia mobile-first."],
+  ["¿LifeXP es gratis?", "Sí. Esta versión está pensada como una app gratuita y local."],
+  ["¿Necesito crear cuenta?", "No. No hay login real en esta versión."],
+  ["¿Dónde se guardan mis datos?", "Los datos se guardan en localStorage, dentro del navegador que estás usando."],
+  ["¿Puedo exportar mis datos?", "Sí. Desde Perfil puedes exportar tus datos como JSON."],
 ];
 
-const PROJECTS = [
-  ["Dark Wallet", "Prototipo web interactivo con estetica digital, coleccionables y sistema de progresion visual.", "Web app / prototipo interactivo", "Demo", "#"],
-  ["Neon Dice", "Experimento visual e interactivo alrededor de dados, azar, identidad grafica y experiencia mobile.", "Web app / sistema visual", "Prototipo", "#"],
-  ["Nido Canino", "Sitio web y sistema de comunicacion para un centro de cuidado estructurado y bienestar animal.", "Landing / marca / servicios", "En desarrollo", "#"],
-  ["Generador QR", "Herramienta web gratuita para crear codigos QR personalizados con diseno visual.", "Utilidad web", "Demo", "#"],
-  ["Portafolio audiovisual", "Seleccion de proyectos de video, animacion, diseno visual y herramientas con IA.", "Portafolio creativo", "Editable", "#"],
+export const portfolioProjects = [
+  {
+    name: "Neon Dice RPG",
+    description: "RPG visual con dados, estética neón y experiencia mobile-first.",
+    type: "Game / RPG prototype",
+    url: "https://neon-dice-rpg.vercel.app/",
+  },
+  {
+    name: "DarkWallet",
+    description: "Prototipo financiero oscuro con interfaz digital y progresión visual.",
+    type: "Web app prototype",
+    url: "https://darkwallet.vercel.app/",
+  },
+  {
+    name: "QR Studio Generator",
+    description: "Herramienta web para generar códigos QR personalizados.",
+    type: "Utility web app",
+    url: "https://qrstudio-generator.vercel.app/",
+  },
+  {
+    name: "Social Comment Generator",
+    description: "Generador de comentarios sociales para flujos creativos rápidos.",
+    type: "AI / content utility",
+    url: "https://social-comment-generator.vercel.app/",
+  },
+  {
+    name: "My Astrology App",
+    description: "Experiencia astrológica web con lectura clara y visual.",
+    type: "Lifestyle web app",
+    url: "https://my-astrology-app.vercel.app/",
+  },
+  {
+    name: "Radar Ventas Digital",
+    description: "Panel simple para lectura y seguimiento comercial digital.",
+    type: "Sales dashboard",
+    url: "https://radar-ventas-digital.vercel.app/",
+  },
+  {
+    name: "Próximo proyecto",
+    description: "Placeholder claro para reemplazar cuando exista un enlace público.",
+    type: "Placeholder",
+    url: "",
+  },
 ];
 
-export function renderHelpView() {
+export function renderHelpView(state = {}) {
   return `
     <main class="view help-view">
       <section class="page-header compact-page-header">
         <img class="brand-logo help-logo" src="/assets/icons/lifexp_primary_logo.svg" alt="LifeXP" />
-        <p class="eyebrow">Ayuda / FAQ</p>
-        <h1>LifeXP sin complicarlo</h1>
-        <p class="page-description">Respuestas claras sobre datos, habitos, rachas, reduccion de consumo y uso en celular.</p>
+        <p class="eyebrow">${t(state, "help.eyebrow")}</p>
+        <h1>${t(state, "help.title")}</h1>
+        <p class="page-description">${t(state, "help.description")}</p>
       </section>
 
       <section class="surface-panel faq-list">
-        <h2>Preguntas frecuentes</h2>
+        <h2>FAQ</h2>
         ${FAQ_ITEMS.map(([question, answer]) => `
           <details class="faq-item">
-            <summary>${question}</summary>
-            <p>${answer}</p>
+            <summary>${escapeHtml(question)}</summary>
+            <p>${escapeHtml(answer)}</p>
           </details>
         `).join("")}
       </section>
 
       <section class="surface-panel brand-panel">
-        <p class="eyebrow">Acerca de LifeXP</p>
-        <h2>Prototipo viable creado por Links Visual Division</h2>
-        <p>
-          LifeXP es un prototipo viable de web app gratuita creado por Links Visual Division. Permite crear habitos,
-          configurar recordatorios, registrar progreso, revisar logros, reducir ciclos y personalizar la experiencia con avatar.
-        </p>
-        <p>La interfaz esta preparada para evolucionar a PWA y app movil en una siguiente etapa.</p>
-        <p><strong>Diseño y desarrollo:</strong> Juan David</p>
-        <button class="btn btn-secondary" data-route="hoy">Volver a la app</button>
+        <p class="eyebrow">${t(state, "app.about")}</p>
+        <h2>${t(state, "help.aboutTitle")}</h2>
+        <p>${t(state, "help.aboutCopy")}</p>
+        <p>${t(state, "help.pwa")}</p>
+        <p><strong>${t(state, "app.footerCredit")}</strong></p>
+        <button class="btn btn-secondary" data-route="hoy">${t(state, "help.back")}</button>
       </section>
 
       <section class="surface-panel">
-        <p class="eyebrow">Portafolio</p>
-        <h2>Otros proyectos de Links Visual Division</h2>
-        <div class="project-grid">
-          ${PROJECTS.map(([name, description, type, status, link]) => `
-            <!-- Reemplazar con link real del proyecto -->
-            <a class="project-card" href="${link}" aria-label="Ver proyecto ${name}">
-              <strong>${name}</strong>
-              <span>${description}</span>
-              <small>${type}</small>
-              <small>Estado: ${status}</small>
-            </a>
+        <p class="eyebrow">${t(state, "help.portfolioEyebrow")}</p>
+        <h2>${t(state, "help.portfolioTitle")}</h2>
+        <div class="project-grid portfolio-grid">
+          ${portfolioProjects.map((project) => `
+            <article class="project-card portfolio-card">
+              <strong>${escapeHtml(project.name)}</strong>
+              <span>${escapeHtml(project.description)}</span>
+              <small>${escapeHtml(project.type)}</small>
+              ${
+                project.url
+                  ? `<a class="btn btn-secondary project-link" href="${project.url}" target="_blank" rel="noopener noreferrer">${t(state, "common.openProject")}</a>`
+                  : `<button class="btn btn-secondary project-link" type="button" disabled>${t(state, "common.replaceLink")}</button>`
+              }
+            </article>
           `).join("")}
         </div>
       </section>

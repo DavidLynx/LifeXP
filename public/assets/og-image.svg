@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="LifeXP preview">
+  <rect width="1200" height="630" fill="#0c1116"/>
+  <rect x="80" y="70" width="1040" height="490" rx="48" fill="#16212c" stroke="#263545"/>
+  <text x="130" y="190" fill="#74d6bd" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">LifeXP</text>
+  <text x="130" y="285" fill="#f4f7fb" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="900">Hábitos simples.</text>
+  <text x="130" y="370" fill="#f4f7fb" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="900">Progreso visible.</text>
+  <text x="130" y="442" fill="#9caabc" font-family="Inter, Arial, sans-serif" font-size="34">App gratuita mobile-first para hábitos, recordatorios y constancia.</text>
+  <path d="M840 310 900 370 1030 220" fill="none" stroke="#74d6bd" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

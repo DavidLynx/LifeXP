@@ -1,0 +1,28 @@
+{
+  "name": "LifeXP",
+  "short_name": "LifeXP",
+  "description": "App gratuita de habitos, recordatorios, progreso personal y reduccion de ciclos.",
+  "start_url": "/#bienvenida",
+  "display": "standalone",
+  "background_color": "#0c1116",
+  "theme_color": "#0c1116",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/assets/icons/lifexp_app_icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon_io/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon_io/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -58,7 +58,7 @@ export function renderHelpView(state = {}) {
   return `
     <main class="view help-view">
       <section class="page-header compact-page-header">
-        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo help-logo" })}
+        ${renderBrandMark(state, { variant: "primary_logo", className: "brand-logo help-logo", hideIcon: true })}
         <p class="eyebrow">${t(state, "help.eyebrow")}</p>
         <h1>${t(state, "help.title")}</h1>
         <p class="page-description">${t(state, "help.description")}</p>

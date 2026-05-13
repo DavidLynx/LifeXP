@@ -90,7 +90,10 @@ function renderTopControls(state) {
         <button class="${state.language === "es" ? "active" : ""}" data-action="set-language" data-language="es" type="button">ES</button>
         <button class="${state.language === "en" ? "active" : ""}" data-action="set-language" data-language="en" type="button">EN</button>
       </div>
-      <div class="credit-pill ${state.session?.bitsPulse ? "bits-pulse" : ""}">${renderIcon("spark")} <strong>${getBits(state)}</strong> ${t(state, "app.credits")}</div>
+      <div class="credit-pill ${state.session?.bitsPulse ? "bits-pulse" : ""}">
+        <img class="bits-icon" src="/assets/icons/btc.svg" alt="" aria-hidden="true" />
+        <strong>${getBits(state)}</strong> ${t(state, "app.credits")}
+      </div>
     </div>
   `;
 }

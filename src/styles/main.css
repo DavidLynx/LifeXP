@@ -132,6 +132,13 @@ button {
   transition: transform 180ms ease, color 180ms ease;
 }
 
+.bits-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));
+}
+
 .bits-pulse,
 .credit-pill:has(strong) {
   animation: bitsPop 360ms ease;
